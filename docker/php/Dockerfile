@@ -39,8 +39,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /srv
 
-USER $user
-
 COPY conf.d/php.ini /usr/local/etc/php/conf.d/custom-php.ini
 
 RUN apt-get update && \
