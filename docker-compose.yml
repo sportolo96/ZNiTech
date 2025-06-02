@@ -1,0 +1,45 @@
+services:
+    php:
+        build:
+            context: docker/php
+        container_name: znitech-php
+        volumes:
+            - .:/srv:rw,cached
+        environment:
+            PHP_IDE_CONFIG: "serverName=docker"
+        networks:
+            - znitech-net
+
+    nginx:
+        build:
+            context: docker/nginx
+        container_name: znitech-nginx
+        ports:
+            - "8080:80"
+        volumes:
+            - .:/srv:rw,cached
+        depends_on:
+            - php
+        networks:
+            - znitech-net
+
+    db:
+        image: mysql:8.0
+        container_name: znitech-db
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+        command: --sort_buffer_size=10M
+        ports:
+            - "${DOCKER_MYSQL_PORT:-3306}:3306"
+        volumes:
+            - db_data:/var/lib/mysql
+        networks:
+            - znitech-net
+
+volumes:
+    db_data:
+
+networks:
+    znitech-net:
+        external: true
